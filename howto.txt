@@ -1,0 +1,202 @@
+################################################################
+# docker WordPress management references
+################################################################
+
+https://docs.docker.com/samples/wordpress/
+https://stackoverflow.com/questions/40985240/how-to-set-wordpress-db-host-in-docker-compose
+https://hub.docker.com/_/wordpress
+https://hub.docker.com/r/tristanpenman/wordpress/
+https://akrabat.com/developing-wordpress-sites-with-docker/####
+
+------------------------------------------------------------------------------------
+docker run --name some-wordpress -p 8080:80 -d wordpress
+
+docker run --name some-wordpress -e WORDPRESS_DB_HOST=10.1.2.3:3306 -e WORDPRESS_DB_USER=... -e WORDPRESS_DB_PASSWORD=... -d wordpress
+
+docker run --name some-wordpress -e WORDPRESS_DB_PASSWORD_FILE=/run/secrets/mysql-root ... -d wordpress:tag
+------------------------------------------------------------------------------------
+Currently, this is supported for
+
+WORDPRESS_DB_HOST, WORDPRESS_DB_USER, 
+WORDPRESS_DB_PASSWORD, WORDPRESS_DB_NAME, WORDPRESS_AUTH_KEY, WORDPRESS_SECURE_AUTH_KEY, WORDPRESS_LOGGED_IN_KEY, WORDPRESS_NONCE_KEY, WORDPRESS_AUTH_SALT,
+WORDPRESS_SECURE_AUTH_SALT, WORDPRESS_LOGGED_IN_SALT, WORDPRESS_NONCE_SALT, WORDPRESS_TABLE_PREFIX, and WORDPRESS_DEBUG.
+------------------------------------------------------------------------------------
+Themes go in a subdirectory in /var/www/html/wp-content/themes/
+Plugins go in a subdirectory in /var/www/html/wp-content/plugins/
+------------------------------------------------------------------------------------
+sudo docker run -it --rm --volumes-from some-wordpress --network container:some-wordpress -e WORDPRESS_DB_USER=blog -e WORDPRESS_DB_PASSWORD=blog  
+# wordpress:cli user list
+------------------------------------------------------------------------------------
+access it via http://localhost:8080 or http://host-ip:8080 in a browser.
+------------------------------------------------------------------------------------
+sudo docker-compose -f wordpress1.yml up -d
+sudo docker-compose -f wordpress1.yml down
+
+sudo docker-compose -f wordpress2.yml up -d
+sudo docker-compose -f wordpress2.yml up -d --remove-orphans
+sudo docker-compose -f wordpress2.yml down
+
+sudo docker-compose version
+sudo docker-compose up -d
+sudo docker-compose down
+
+sudo docker ps
+sudo docker stop 050430b0f8a3
+sudo docker rm 050430b0f8a3
+
+sudo docker images
+sudo docker image rm 050430b0f8a3 050430b0f8a3
+
+sudo docker container ls
+sudo docker container stats
+sudo docker container rm 050430b0f8a3
+------------------------------------------------------------------------------------
+# access mysql container by sh
+sudo docker exec -it wordpress_db bash
+sudo docker exec -it 0a0a92fef642 bash
+sudo docker run -it cf0f3ca922e0 bin/bash
+
+sudo docker run -itd --name ubuntu ubuntu:1804 /bin/bash
+sudo docker exec -it ubuntu bash
+
+------------------------------------------------------------------------------------
+http://localhost:8080/wp-admin/install.php
+------------------------------------------------------------------------------------
+define( 'WP_DEBUG', true ); 			# Enable debugging
+define( 'WP_DEBUG_LOG', true ); 		# saved to a debug.log
+define( 'WP_DEBUG_DISPLAY', false ); 	# shown inside the HTML
+define( 'SAVEQUERIES', true );
+------------------------------------------------------------------------------------
+Replace session_start() with the following in the plugin config file…
+//@session_start();
+session_start([ 'read_and_close' => true, ]);
+
+TL;DR Sessions hanging. Urge developers to remove use of sessions.
+In the meantime replace session_start(); with session_start(['read_and_close' => true,]);
+------------------------------------------------------------------------------------
+[ debugging-in-wordpress ]
+https://wordpress.org/support/article/debugging-in-wordpress/
+https://github.com/afragen/wp-debugging
+https://de.wordpress.org/plugins/wp-debugging/
+
+Debug Bar       - https://wordpress.org/plugins/debug-bar/
+Query Monitor   - https://wordpress.org/plugins/query-monitor/
+WP Debugging    - https://wordpress.org/plugins/wp-debugging/
+
+------------------------------------------------------------------------------------
+https://hub.docker.com/r/portainer/portainer
+https://hub.docker.com/r/portainer/portainer-ce
+https://docs.portainer.io/v/ce-2.9/start/install
+https://docs.portainer.io/v/ce-2.9/start/install/server/docker/linux
+
+docker pull portainer/portainer
+docker pull portainer/portainer-ce
+
+docker volume create portainer_data
+docker run -d -p 9000:9000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data  portainer/portainer-ce:latest
+
+admin:fgry4kk3A8t5AmPy
+------------------------------------------------------------------------------------
+sudo apt install tree
+tree . --dirsfirst -FL 1
+------------------------------------------------------------------------------------
+https://forums.docker.com/t/how-to-get-access-to-php-ini-file/68986/3
+# BEGIN WordPress
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+# END WordPress
+----
+php info
+https://www.wpbeginner.com/plugins/how-to-quickly-get-system-information-for-your-wordpress-site/
+https://wordpress.org/plugins/phpinfo-wp/
+https://kinsta.com/de/wissensdatenbank/phpinfo/
+
+
+------------------------------------------------------------------------------------
+Makefile
+https://www.gnu.org/software/make/manual/html_node/Makefile-Contents.html
+https://www.tutorialspoint.com/makefile/makefile_example.htm
+https://opensource.com/article/18/8/what-how-makefile
+------------------------------------------------------------------------------------
+
+save  examples
+https://docs.docker.com/engine/reference/commandline/commit/
+https://docs.docker.com/engine/reference/commandline/save/
+https://sh-tsang.medium.com/docker-tutorial-4-exporting-container-and-saving-image-c3a7d792cfb6
+https://dockerlabs.collabnix.com/beginners/saving-images-as-tar/
+https://phoenixnap.com/kb/how-to-commit-changes-to-docker-image
+https://docs.oracle.com/cd/E37670_01/E75728/html/section_c5q_n2z_fp.html
+https://pspdfkit.com/blog/2019/docker-import-export-vs-load-save/
+
+Four basic Docker CLI comes into action:
+
+    The docker export - Export a container’s filesystem as a tar archive
+    The docker import - Import the contents from a tarball to create a filesystem image
+    The docker save - Save one or more images to a tar archive (streamed to STDOUT by default)
+    The docker load - Load an image from a tar archive or STDIN
+
+docker run -d -p 80:80 nginx
+docker ps -a
+docker export df2 > nginx.tar
+docker import - mynginx < nginx.tar
+docker images
+docker save -o mynginx1.tar nginx
+docker rmi mynginx
+docker images
+docker load < mynginx1.tar
+
+
+
+docker save busybox > busybox.tar
+docker save --output busybox.tar busybox
+docker save -o fedora-all.tar fedora
+docker save -o fedora-latest.tar fedora:latest
+docker save myimage:latest | gzip > myimage_latest.tar.gz
+docker save -o ubuntu.tar ubuntu:lucid ubuntu:saucy
+
+
+sudo docker save ubuntu > ubuntu_save.tar
+sudo docker export ubuntu > ubuntu_export.tar
+sudo docker stop ubuntu 
+sudo docker rm ubuntu
+sudo docker rmi ubuntu:18.04
+sudo docker load < ubuntu_save.tar
+
+cat ubuntu_export.tar | sudo docker import - ubuntu:18.04
+sudo docker run -itd --name ubuntu ubuntu:18.04 /bin/bash
+sudo docker exec -it ubuntu bash
+
+
+------------------------------------------------------------------------------------
+
+misc
+https://garywoodfine.com/docker-wordpress-debug-environment/
+https://stackoverflow.com/questions/55462067/docker-compose-file-not-showing-php-errors-from-wp-config-php
+https://www.mrjamiebowman.com/software-development/wordpress/docker-compose-wordpress_config_extra/
+https://forums.docker.com/t/how-to-get-access-to-php-ini-file/68986/18
+
+https://dzone.com/articles/setup-wordpress-debug-environment-with-docker-and
+https://kubernetes.io/docs/tutorials/stateful-application/mysql-wordpress-persistent-volume/
+https://www.section.io/engineering-education/docker-wordpress-containerizing-wordpress-with-docker-compose/
+https://www.serverlab.ca/tutorials/containers/docker/running-your-wordpress-site-in-docker/
+https://gridscale.io/community/tutorials/dockerize-wordpress-docker-compose/
+
+nginx
+https://serverfault.com/questions/1070526/cant-connect-wordpress-and-mariadb-on-lamp-stack-with-docker-compose
+https://stackoverflow.com/questions/39875543/cant-update-php-ini-file-in-docker-container
+https://www.sentinelone.com/blog/create-docker-image/
+https://stackoverflow.com/questions/44480740/how-to-save-a-docker-container-state
+https://phoenixnap.com/kb/how-to-commit-changes-to-docker-image
+
+------------------------------------------------------------------------------------
+
+https://github.com/peez80/docker-playground
+https://github.com/shellwhale/ansible-docker-playground
+https://github.com/vdesabou/kafka-docker-playground
+https://github.com/play-with-docker/play-with-docker
