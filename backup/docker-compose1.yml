@@ -9,7 +9,7 @@ services:
     volumes:
       - wordpress_data:/var/www/html
     ports:
-      - 8080:80
+      - "8080:80"
     environment:
       - WORDPRESS_DB_HOST=wordpress_db:3306
       - WORDPRESS_DB_USER=wordpress
@@ -23,9 +23,11 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=example
     ports:
-      - 3307:3306
+      - "3307:3306"
+
 #volumes:
 #  - /doc/wordpress_db:/var/lib/mysql
+
 volumes:
   db_data: {}
   wordpress_data: {}

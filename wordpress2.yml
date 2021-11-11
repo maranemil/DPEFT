@@ -15,7 +15,7 @@ services:
     working_dir: /var/www/html
     # env_file: .env
     ports:
-      - 8080:80
+      - "8080:80"
     environment:
       WORDPRESS_DB_HOST: my_database:3306
       WORDPRESS_DB_USER: blabla
