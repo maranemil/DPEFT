@@ -49,7 +49,7 @@ services:
       MYSQL_USER: blabla
       MYSQL_PASSWORD: blabla
     ports:
-      - 3306:3306
+      - "3306:3306"
     volumes:
       - mysql:/var/lib/mysql
 
